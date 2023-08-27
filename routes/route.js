@@ -8,16 +8,13 @@ import { authenticateToken ,createNewToken} from '../controller/jwt-controller.j
 
 const router = express.Router();
 
-//.post(endpoint, )
+
+// router.post('/signup',signupUser);
 router.post('/signup',signupUser);
 router.post('/login',loginUser);
 router.post('/logout', logoutUser);
 
 router.post('/token', createNewToken);
-
-// router.get('login', async (req,res)=>{
-//     res.status(200).json(users)
-// })
      
 //call middlware for single file upload to mongodb
 router.post('/file/upload', upload.single('file') ,uploadImage)
@@ -26,8 +23,10 @@ router.get('/file/:filename', getImage);
 // router.post('/create',authenticateToken,  createPost)
 router.post('/create', createPost)
 router.put('/update/:id', authenticateToken, updatePost);
-router.delete('/delete/:id', authenticateToken, deletePost);
+// router.delete('/delete/:id', authenticateToken, deletePost);
+router.delete('/delete/:id',  deletePost);
 
-router.get('/post/:id', authenticateToken, getPost);
+router.get('/post/:id', getPost);
+
 router.get('/posts', getAllPosts);
 export default router;

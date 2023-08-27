@@ -14,8 +14,10 @@ dotenv.config();//in orde to use env variables
 
 //File functiwons -> handle callback functions used in route.ks
 //SIGNUP API
+
 export const signupUser = async (request, response) =>{
 
+        console.log('singup in user controller')
     try {
         // const salt = await bcrypt.genSalt();
         // const hashedPassword = await bcrypt.hash(request.body.password, salt);
@@ -23,6 +25,7 @@ export const signupUser = async (request, response) =>{
         // bcrypt.hash()
 
         const user = { username: request.body.username, name: request.body.name, password: hashedPassword }
+        console.log(user);
 
         const newUser = new User(user);
         await newUser.save();
@@ -38,14 +41,16 @@ export const signupUser = async (request, response) =>{
 //LOGIN API with help of token JWT auth
 export const loginUser = async(request,response) => {
 
+    console.log('login controller')
     //not is json format convert using to JSON this user variable contains all values of user object found b User.finOne function in mongodb atlas
     let user = await User.findOne({ username: request.body.username });
     if(!user){
-        return response.status(400).json({msg:"Error username n ot found"})
+        return response.status(400).json({msg:"Error username not found"})
     }
     //use try and catch method to handle errors if user exists in db bcoz response still depends on cloud database
     try{
         //use bcrypt.compare to compare given andsaved pasword
+        console.log(request.body.password)
         let match = await bcrypt.compare(request.body.password, user.password)
         
         //if passswords match then create a access toekn and refresh token with json Web Token JWT
@@ -53,8 +58,10 @@ export const loginUser = async(request,response) => {
 
             //accesstoekn is temporary avaibale set usually for 15 minutes
             //jstsign(body,secret key) create usign cypto 
+
             const accessToken = jwt.sign(user.toJSON(), process.env.ACCESS_SECRET_KEY , {expiresIn: '15m'});
-            const refreshToken = jwt.sign(user.toJSON(), process.env.REFRESH_SECRET_KEY)
+            const refreshToken = jwt.sign(user.toJSON(), process.env.REFRESH_SECRET_KEY, { expiresIn: '15d' })
+            console.log(accessToken, refreshToken)
             //we will create new access token with refresh token after 15m everytimes
 
             const newToken = new Token({ token: refreshToken})
@@ -92,48 +99,4 @@ export const logoutUser = async (request, response) => {
     
 }
 
-
-// function Usercontroller(req, res, next) {
-
-//     const authorization = req.headers.authorization;
-
-//     if (!authorization) {
-//         return res.status(401).json({
-//             message: 'No Authorization Header'
-//         })
-//     }
-
-//     try {
-//         const token = authorization.split('Bearer ')[1];
-//         if (!token) {
-//             return res.status(401).json({
-//                 message: 'Invalid Token Format'
-//             })
-//         }
-        
-//         const decode = jwt.verify(token, SECRET_KEY);
-//         req.user = decode
-//         // next()
-
-//     }catch (error) {
-//         if (error instanceof jwt.TokenExpiredError) {
-//             return res.status(401).json({
-//                 message: 'Session Expired',
-//                 error: error.message,
-//             })
-//         }
-//         if (error instanceof jwt.JsonWebTokenError || error instanceof TokenError) {
-//             return res.status(401).json({
-//                 message: 'Invalid Token',
-//                 error: error.message,
-//             })
-//         }
-//         res.status(500).json({
-//             message: 'Internal server Error',
-//             error: error.message,
-//             stack: error.stack
-//         });
-//     }
-// }
-
-// export default Usercontroller
+// For username zenitsu07 Storage {accessToken: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaW…5NTF9.5C4R9n0oFxwMBll7a2ImyhCuQOIUzm5x6qPPVK9a9Sc', refreshToken: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaW…wNTF9.aSOS5ijulOlfq53a5EkiIPJrBolN7B_Pb35E6jxgAFY', length: 2}
