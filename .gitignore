@@ -1,5 +1,12 @@
-<<<<<<< HEAD
-/history
-=======
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
->>>>>>> 7300d5adc55e58b7d64d3f08ae47466e9a9410bc
+# dependencies
+node_modules
+
+# production
+/build
+
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
