@@ -1,8 +1,10 @@
 import { request, response } from "express"
 import mongoose ,{ mongo }  from "mongoose"
 import grid from 'gridfs-stream'
+import dotenv from 'dotenv'
+dotenv.config();
 
-const url = 'http://localhost:8000'
+const url = process.env.HOST|| 'http://localhost:8000'
 
 let gfs,gridfsBucket ;
 const conn = mongoose.connection;

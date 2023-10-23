@@ -7,18 +7,17 @@ import Token from "../model/token.js";
 import User from "../model/user.js";
 
 
-dotenv.config();//in orde to use env variables
+dotenv.config();//in order to use env variables
 // const SECRET_KEY = process.env.SECRET_KEY;
-
-
 
 //File functiwons -> handle callback functions used in route.ks
 //SIGNUP API
 
 export const signupUser = async (request, response) =>{
 
-        console.log('singup in user controller')
-    try {
+        console.log('signup in user controller')
+    
+        try {
         // const salt = await bcrypt.genSalt();
         // const hashedPassword = await bcrypt.hash(request.body.password, salt);
         const hashedPassword = await bcrypt.hash(request.body.password, 10);
@@ -31,12 +30,12 @@ export const signupUser = async (request, response) =>{
         await newUser.save();
 
         return response.status(200).json({ msg: 'Signup successfull' });
+    
     } catch (error) {
         return response.status(500).json({ msg: 'Error while signing up user' });
     }
 
 }
-
 
 //LOGIN API with help of token JWT auth
 export const loginUser = async(request,response) => {
@@ -44,6 +43,7 @@ export const loginUser = async(request,response) => {
     console.log('login controller')
     //not is json format convert using to JSON this user variable contains all values of user object found b User.finOne function in mongodb atlas
     let user = await User.findOne({ username: request.body.username });
+    
     if(!user){
         return response.status(400).json({msg:"Error username not found"})
     }
@@ -74,7 +74,9 @@ export const loginUser = async(request,response) => {
             return response.status(200).json({ accessToken: accessToken, refreshToken: refreshToken, name: user.name, username : user.username})
 
         }
+
         else{
+            
             return response.status(400).json({msg: "password does not match"});
         }
     

@@ -1,55 +1,28 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors'
-import bodyParser from 'body-parser';
+'use strict';
+const os = require('os');
+const path = require('path');
 
-//latest syntex to import 
-import { Connection } from './database/db.js';
-import router from './routes/route.js';
+const homeDirectory = os.homedir();
+const {env} = process;
 
-dotenv.config();
+exports.data = env.XDG_DATA_HOME ||
+	(homeDirectory ? path.join(homeDirectory, '.local', 'share') : undefined);
 
-const app = express();  
+exports.config = env.XDG_CONFIG_HOME ||
+	(homeDirectory ? path.join(homeDirectory, '.config') : undefined);
 
-//app.use is used to handle any type of requests or method 
-//app.use(path,handler function)
+exports.cache = env.XDG_CACHE_HOME || (homeDirectory ? path.join(homeDirectory, '.cache') : undefined);
 
-// Use the cors middleware and allow requests from both origins
-app.use(cors({
-    origin: ["https://create-your-space-serverside.vercel.app/", "http://localhost:3000"],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  }));
-//to handle invalid chars in url 
-app.use(bodyParser.json({extended:true}))
-app.use(bodyParser.urlencoded({extended:true}))
-// app.use('/user', router)
+exports.runtime = env.XDG_RUNTIME_DIR || undefined;
 
-app.use('/', router)
+exports.dataDirs = (env.XDG_DATA_DIRS || '/usr/local/share/:/usr/share/').split(':');
 
-app.get("/",(req,res)=>{
+if (exports.data) {
+	exports.dataDirs.unshift(exports.data);
+}
 
-    res.send("Hello user ")
+exports.configDirs = (env.XDG_CONFIG_DIRS || '/etc/xdg').split(':');
 
-})
-app.get("/login", router)
-
-
-// const PORT = 8000;
-// const PORT = 'https://create-your-space.vercel.app/'
-const USERNAME = process.env.DB_USERNAME
-
-const PASSWORD = process.env.DB_PASSWORD
-
-//parse the importted usrname and password
-Connection(USERNAME, PASSWORD);
-
-// app.listen(PORT,() =>{
-
-//     console.log(`server is running on port: ${PORT}`)
-
-// });
-
-app.listen( () => {
-    console.log("Server is running");
-})
+if (exports.config) {
+	exports.configDirs.unshift(exports.config);
+}

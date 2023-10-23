@@ -1,13 +1,13 @@
 {
     "version": 2,
     "name": "create_your_space",
-    "builds": [
+    "build": [
         {
-            "src":"./index.js",
+            "src":"app.js",
             "use": "@vercel/node"
         }
     ],
     "routes":[
-        {"src":"/(.*)", "dest":"/"}
+        {"src":"/(.*)", "dest":"/index.js"}
     ]
 }
